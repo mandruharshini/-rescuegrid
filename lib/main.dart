@@ -247,7 +247,7 @@ class _GlassState extends State<Glass> with SingleTickerProviderStateMixin{
   @override void dispose(){a.dispose();super.dispose();}
   @override Widget build(BuildContext context)=>AnimatedBuilder(animation:a,builder:(_,__) {
     final lift=math.sin(a.value*math.pi)*3;
-    final glow=(widget.glow?.20:.06)+(math.sin(a.value*math.pi)*.04);
+    final glow=(widget.glow ? .20 : .06)+(math.sin(a.value*math.pi)*.04);
     return Transform.translate(offset:Offset(0,-lift),child:Container(
       padding:const EdgeInsets.all(16),
       decoration:BoxDecoration(color:Colors.white.withOpacity(.045),borderRadius:BorderRadius.circular(20),
