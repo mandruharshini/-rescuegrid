@@ -14,7 +14,7 @@ const JWT_SECRET=process.env.JWT_SECRET||"rescuegrid-change-this-secret";
 
 app.use(cors());
 app.use(express.json({limit:"8mb"}));
-app.use(express.static(path.join(__dirname,"public")));
+app.use(express.static(__dirname));
 
 const users=[];
 const incidents=[
@@ -65,5 +65,5 @@ app.patch("/api/incidents/:id",auth,(req,res)=>{
 });
 app.get("/api/stats",(req,res)=>res.json({active:incidents.filter(i=>i.status!=="RESOLVED").length,respondersOnline:12,networkHealth:99,averageResponse:"02:14"}));
 io.on("connection",socket=>{socket.emit("system:ready",{message:"RescueGrid realtime channel connected"})});
-app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
+app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"index.html")));
 server.listen(PORT,()=>console.log("RescueGrid live server listening on "+PORT));
