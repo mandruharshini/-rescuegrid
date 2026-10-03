@@ -115,7 +115,7 @@ class Login extends StatelessWidget{
 
 class RoleButton extends StatelessWidget{
   const RoleButton(this.role,this.tap,{super.key});final Role role;final VoidCallback tap;
-  @override Widget build(BuildContext context){final icon=role==Role.student?Icons.school:role==Role.responder?Icons.health_and_safety:Icons.admin_panel_settings;final name=role==Role.student?'Student':role==Role.responder?'Responder':'Command Admin';final sub=role==Role.student?'Report emergency with GPS and photo':role==Role.responder?'Receive assignments and navigate':'Monitor incidents and manage response';return InkWell(onTap:tap,borderRadius:BorderRadius.circular(16),child:Ink(decoration:BoxDecoration(color:Colors.white.withOpacity(.04),borderRadius:BorderRadius.circular(16),border:Border.all(color:Colors.white10)),padding:const EdgeInsets.all(16),child:Row(children:[Icon(icon,color:const Color(0xFF18D7C2)),const SizedBox(width:14),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(name,style:const TextStyle(fontWeight:FontWeight.w800)),const SizedBox(height:3),Text(sub,style:const TextStyle(fontSize:11,color:Colors.white45))])),const Icon(Icons.arrow_forward_ios,size:14,color:Colors.white38)])));}
+  @override Widget build(BuildContext context){final icon=role==Role.student?Icons.school:role==Role.responder?Icons.health_and_safety:Icons.admin_panel_settings;final name=role==Role.student?'Student':role==Role.responder?'Responder':'Command Admin';final sub=role==Role.student?'Report emergency with GPS and photo':role==Role.responder?'Receive assignments and navigate':'Monitor incidents and manage response';return InkWell(onTap:tap,borderRadius:BorderRadius.circular(16),child:Ink(decoration:BoxDecoration(color:Colors.white.withOpacity(.04),borderRadius:BorderRadius.circular(16),border:Border.all(color:Colors.white10)),padding:const EdgeInsets.all(16),child:Row(children:[Icon(icon,color:const Color(0xFF18D7C2)),const SizedBox(width:14),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(name,style:const TextStyle(fontWeight:FontWeight.w800)),const SizedBox(height:3),Text(sub,style:const TextStyle(fontSize:11,color:const Color(0x73FFFFFF)))])),const Icon(Icons.arrow_forward_ios,size:14,color:Colors.white38)])));}
 }
 
 class Home extends StatefulWidget{
@@ -155,7 +155,7 @@ class _StudentState extends State<Student>{
         const Divider(color:Colors.white10),if(widget.c.photo!=null)Padding(padding:const EdgeInsets.all(12),child:Row(children:[ClipRRect(borderRadius:BorderRadius.circular(10),child:Image.memory(widget.c.photo!,width:65,height:65,fit:BoxFit.cover)),const SizedBox(width:12),const Expanded(child:Text('Evidence photo attached')),IconButton(onPressed:widget.c.clearPhoto,icon:const Icon(Icons.close))]) else ListTile(leading:const Icon(Icons.camera_alt_outlined),title:const Text('Attach photograph'),subtitle:const Text('Optional evidence'),onTap:widget.c.camera),
       ])),
       const SizedBox(height:15),SizedBox(height:56,child:FilledButton.icon(style:FilledButton.styleFrom(backgroundColor:Colors.redAccent),onPressed:(){widget.c.report(cat,desc.text);setState(()=>sent=true);},icon:const Icon(Icons.sos),label:const Text('SEND EMERGENCY ALERT',style:TextStyle(fontWeight:FontWeight.w900,letterSpacing:.5)))),
-      const SizedBox(height:16),Glass(child:Row(children:[const Icon(Icons.psychology,color:Colors.amber),const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[const Text('SEVERITY ENGINE',style:TextStyle(fontSize:9,letterSpacing:1.8,color:Colors.white45)),const SizedBox(height:4),Text(cat==Category.fire||cat==Category.medical?'High / Critical priority detected':'Normal / High priority detected',style:const TextStyle(fontWeight:FontWeight.w700)),const Text('Category + location risk + context',style:TextStyle(fontSize:10,color:Colors.white38))]))])),
+      const SizedBox(height:16),Glass(child:Row(children:[const Icon(Icons.psychology,color:Colors.amber),const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[const Text('SEVERITY ENGINE',style:TextStyle(fontSize:9,letterSpacing:1.8,color:const Color(0x73FFFFFF))),const SizedBox(height:4),Text(cat==Category.fire||cat==Category.medical?'High / Critical priority detected':'Normal / High priority detected',style:const TextStyle(fontWeight:FontWeight.w700)),const Text('Category + location risk + context',style:TextStyle(fontSize:10,color:Colors.white38))]))])),
     ]);
   }
 }
@@ -170,7 +170,7 @@ class ResponderCard extends StatelessWidget{
   const ResponderCard({super.key,required this.c,required this.i});final RescueController c;final Incident i;
   @override Widget build(BuildContext context)=>Padding(padding:const EdgeInsets.only(bottom:12),child:Glass(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
     Row(children:[Icon(i.category.icon,color:Colors.redAccent),const SizedBox(width:9),Expanded(child:Text(i.category.label,style:const TextStyle(fontWeight:FontWeight.w800,fontSize:16))),Priority(i.priorityText)]),
-    const SizedBox(height:7),Text(i.location,style:const TextStyle(color:Colors.white65)),const SizedBox(height:5),Text(i.description,style:const TextStyle(fontSize:11,color:Colors.white45)),const SizedBox(height:13),StatusBar(i:i),const SizedBox(height:13),
+    const SizedBox(height:7),Text(i.location,style:const TextStyle(color:const Color(0xA6FFFFFF))),const SizedBox(height:5),Text(i.description,style:const TextStyle(fontSize:11,color:const Color(0x73FFFFFF))),const SizedBox(height:13),StatusBar(i:i),const SizedBox(height:13),
     Wrap(spacing:8,runSpacing:8,children:[
       if(i.status==Status.assigned)FilledButton(onPressed:()=>c.status(i,Status.accepted),child:const Text('Accept')),
       if(i.status==Status.accepted)FilledButton(onPressed:()async{c.status(i,Status.enRoute);await openMap(i);},child:const Text('Navigate')),
@@ -187,7 +187,7 @@ class Command extends StatelessWidget{
 }
 class Analytics extends StatelessWidget{
   const Analytics({super.key,required this.c});final RescueController c;
-  @override Widget build(BuildContext context){final total=c.incidents.length;return ListView(padding:const EdgeInsets.all(18),children:[const TitleBlock('COMMAND ANALYTICS','Response intelligence','Operational statistics from the incident timeline.'),const SizedBox(height:16),Metrics(items:[('REPORTS','$total',Colors.cyanAccent),('CRITICAL','\${c.incidents.where((i)=>i.priority>=3).length}',Colors.redAccent),('RESOLVED','\${c.incidents.where((i)=>i.status==Status.resolved).length}',Colors.greenAccent)]),const SizedBox(height:16),Glass(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[const Text('INCIDENT CATEGORIES',style:TextStyle(fontSize:10,letterSpacing:1.5,color:Colors.white45)),const SizedBox(height:16),...Category.values.map((cat){final n=c.incidents.where((i)=>i.category==cat).length;final ratio=total==0?0:n/total;return Padding(padding:const EdgeInsets.only(bottom:14),child:Row(children:[SizedBox(width:85,child:Text(cat.label,style:const TextStyle(fontSize:12))),Expanded(child:ClipRRect(borderRadius:BorderRadius.circular(8),child:LinearProgressIndicator(value:ratio,minHeight:9))),const SizedBox(width:10),Text('$n')]);})]))]);}
+  @override Widget build(BuildContext context){final total=c.incidents.length;return ListView(padding:const EdgeInsets.all(18),children:[const TitleBlock('COMMAND ANALYTICS','Response intelligence','Operational statistics from the incident timeline.'),const SizedBox(height:16),Metrics(items:[('REPORTS','$total',Colors.cyanAccent),('CRITICAL','\${c.incidents.where((i)=>i.priority>=3).length}',Colors.redAccent),('RESOLVED','\${c.incidents.where((i)=>i.status==Status.resolved).length}',Colors.greenAccent)]),const SizedBox(height:16),Glass(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[const Text('INCIDENT CATEGORIES',style:TextStyle(fontSize:10,letterSpacing:1.5,color:const Color(0x73FFFFFF))),const SizedBox(height:16),...Category.values.map((cat){final n=c.incidents.where((i)=>i.category==cat).length;final double ratio=total==0?0.0:n/total;return Padding(padding:const EdgeInsets.only(bottom:14),child:Row(children:[SizedBox(width:85,child:Text(cat.label,style:const TextStyle(fontSize:12))),Expanded(child:ClipRRect(borderRadius:BorderRadius.circular(8),child:LinearProgressIndicator(value:ratio,minHeight:9))),const SizedBox(width:10),Text('$n')]);})]))]);}
 }
 class History extends StatelessWidget{const History({super.key,required this.c});final RescueController c;@override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(18),children:[const TitleBlock('AUDIT TRAIL','Incident timeline','Chronological record of reporting, scoring, assignment, acceptance, arrival and resolution.'),const SizedBox(height:16),...c.incidents.map((i)=>IncidentCard(i:i,expanded:true))]);}
 class MapView extends StatelessWidget{const MapView({super.key,required this.c});final RescueController c;@override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(18),children:[const TitleBlock('LIVE RESPONSE MAP','Campus tactical view','Incident locations and responder progress.'),const SizedBox(height:16),SizedBox(height:540,child:CampusMap(incidents:c.incidents.where((i)=>i.status!=Status.resolved).toList()))]);}
@@ -228,14 +228,32 @@ class LegendDot extends StatelessWidget{const LegendDot(this.color,this.text,{su
 class IncidentCard extends StatelessWidget{
   const IncidentCard({super.key,required this.i,this.expanded=false});final Incident i;final bool expanded;
   @override Widget build(BuildContext context)=>Padding(padding:const EdgeInsets.only(bottom:10),child:Glass(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-    Row(children:[Icon(i.category.icon,color:Colors.redAccent),const SizedBox(width:9),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(i.category.label,style:const TextStyle(fontWeight:FontWeight.w800)),Text(i.location,style:const TextStyle(fontSize:10,color:Colors.white45))])),Priority(i.priorityText)]),const SizedBox(height:8),Text(i.description,style:const TextStyle(fontSize:12,color:Colors.white65)),const SizedBox(height:11),StatusBar(i:i),
+    Row(children:[Icon(i.category.icon,color:Colors.redAccent),const SizedBox(width:9),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(i.category.label,style:const TextStyle(fontWeight:FontWeight.w800)),Text(i.location,style:const TextStyle(fontSize:10,color:const Color(0x73FFFFFF)))])),Priority(i.priorityText)]),const SizedBox(height:8),Text(i.description,style:const TextStyle(fontSize:12,color:const Color(0xA6FFFFFF))),const SizedBox(height:11),StatusBar(i:i),
     if(expanded)...[const Divider(color:Colors.white10),...i.events.map((e)=>ListTile(contentPadding:EdgeInsets.zero,dense:true,leading:const Icon(Icons.check_circle_outline,size:16,color:Colors.cyanAccent),title:Text(e.title,style:const TextStyle(fontSize:12)),subtitle:Text(e.actor,style:const TextStyle(fontSize:10,color:Colors.white38)),trailing:Text(timeText(e.time),style:const TextStyle(fontSize:9,color:Colors.white38))))],
   ])));
 }
 class StatusBar extends StatelessWidget{const StatusBar({super.key,required this.i});final Incident i;@override Widget build(BuildContext c){final n=Status.values.indexOf(i.status);return Row(children:Status.values.map((s){final done=Status.values.indexOf(s)<=n;return Expanded(child:Container(margin:const EdgeInsets.only(right:3),height:6,decoration:BoxDecoration(color:done?Colors.cyanAccent:Colors.white10,borderRadius:BorderRadius.circular(9))));}).toList());}}
 class Priority extends StatelessWidget{const Priority(this.text,{super.key});final String text;@override Widget build(BuildContext c)=>Container(padding:const EdgeInsets.symmetric(horizontal:8,vertical:5),decoration:BoxDecoration(color:(text=='CRITICAL'?Colors.redAccent:Colors.amber).withOpacity(.12),borderRadius:BorderRadius.circular(20)),child:Text(text,style:TextStyle(fontSize:9,fontWeight:FontWeight.w900,color:text=='CRITICAL'?Colors.redAccent:Colors.amber)));}
-class Metrics extends StatelessWidget{const Metrics({super.key,required this.items});final List<(String,String,Color)> items;@override Widget build(BuildContext c)=>Row(children:items.map((x)=>Expanded(child:Padding(padding:const EdgeInsets.only(right:8),child:Glass(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(x.$1,style:const TextStyle(fontSize:9,color:Colors.white45,letterSpacing:1)),const SizedBox(height:6),Text(x.$2,style:TextStyle(fontSize:23,fontWeight:FontWeight.w900,color:x.$3))])))).toList());}}
-class TitleBlock extends StatelessWidget{const TitleBlock(this.eyebrow,this.title,this.subtitle,{super.key});final String eyebrow,title,subtitle;@override Widget build(BuildContext c)=>Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(eyebrow,style:const TextStyle(fontSize:9,letterSpacing:2,color:Colors.cyanAccent)),const SizedBox(height:6),Text(title,style:const TextStyle(fontSize:28,fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(subtitle,style:const TextStyle(fontSize:12,color:Colors.white45,height:1.45))]);}
+class Metrics extends StatelessWidget{
+  const Metrics({super.key,required this.items});
+  final List<(String,String,Color)> items;
+  @override Widget build(BuildContext c)=>Row(
+    children:items.map<Widget>((x)=>Expanded(
+      child:Padding(
+        padding:const EdgeInsets.only(right:8),
+        child:Glass(child:Column(
+          crossAxisAlignment:CrossAxisAlignment.start,
+          children:[
+            Text(x.$1,style:const TextStyle(fontSize:9,color:Color(0x73FFFFFF),letterSpacing:1)),
+            const SizedBox(height:6),
+            Text(x.$2,style:TextStyle(fontSize:23,fontWeight:FontWeight.w900,color:x.$3)),
+          ],
+        )),
+      ),
+    )).toList(),
+  );
+}
+class TitleBlock extends StatelessWidget{const TitleBlock(this.eyebrow,this.title,this.subtitle,{super.key});final String eyebrow,title,subtitle;@override Widget build(BuildContext c)=>Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(eyebrow,style:const TextStyle(fontSize:9,letterSpacing:2,color:Colors.cyanAccent)),const SizedBox(height:6),Text(title,style:const TextStyle(fontSize:28,fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(subtitle,style:const TextStyle(fontSize:12,color:const Color(0x73FFFFFF),height:1.45))]);}
 class Glass extends StatefulWidget{
   const Glass({super.key,required this.child,this.glow=false});
   final Widget child; final bool glow;
@@ -291,5 +309,5 @@ class _OrbitalCoreState extends State<OrbitalCore> with SingleTickerProviderStat
   ])));
 }
 
-String timeText(DateTime t)=>'\${t.hour.toString().padLeft(2,'0')}:\${t.minute.toString().padLeft(2,'0')}';
+String timeText(DateTime t)=>"${t.hour.toString().padLeft(2,"0")}:${t.minute.toString().padLeft(2,"0")}";
 Future<void> openMap(Incident i)async{if(i.lat==null||i.lng==null)return;final u=Uri.parse('https://www.google.com/maps/dir/?api=1&destination=\${i.lat},\${i.lng}');if(await canLaunchUrl(u))await launchUrl(u,mode:LaunchMode.externalApplication);}
