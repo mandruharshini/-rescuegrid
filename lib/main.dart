@@ -105,9 +105,9 @@ class Login extends StatelessWidget{
   const Login({super.key,required this.c});final RescueController c;
   @override Widget build(BuildContext context)=>Scaffold(body:Stack(children:[
     const Positioned.fill(child:CustomPaint(painter:GridPainter())),
-    Center(child:SingleChildScrollView(padding:const EdgeInsets.all(22),child:ConstrainedBox(constraints:const BoxConstraints(maxWidth:520),child:Glass(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+    Center(child:SingleChildScrollView(padding:const EdgeInsets.all(22),child:ConstrainedBox(constraints:const BoxConstraints(maxWidth:560),child:Glass(glow:true,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
       Row(children:[Container(padding:const EdgeInsets.all(11),decoration:BoxDecoration(color:Colors.redAccent.withOpacity(.12),borderRadius:BorderRadius.circular(14)),child:const Icon(Icons.radar,color:Colors.redAccent)),const SizedBox(width:12),const Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('RESCUEGRID',style:TextStyle(fontSize:22,fontWeight:FontWeight.w900,letterSpacing:2)),Text('CAMPUS RESPONSE NETWORK',style:TextStyle(fontSize:9,letterSpacing:2,color:Colors.white38))])]),
-      const SizedBox(height:32),const Text('Emergency response,',style:TextStyle(fontSize:30,fontWeight:FontWeight.w900)),const Text('connected in real time.',style:TextStyle(fontSize:30,fontWeight:FontWeight.w900,color:Color(0xFF18D7C2))),const SizedBox(height:10),const Text('Flutter-only RescueGrid demo with student, responder and command roles.',style:TextStyle(color:Colors.white54)),
+      const SizedBox(height:18),const Center(child:OrbitalCore()),const SizedBox(height:18),const Text('Emergency response,',style:TextStyle(fontSize:30,fontWeight:FontWeight.w900)),const Text('connected in real time.',style:TextStyle(fontSize:30,fontWeight:FontWeight.w900,color:Color(0xFF18D7C2))),const SizedBox(height:10),const Text('Flutter-only RescueGrid demo with student, responder and command roles.',style:TextStyle(color:Colors.white54)),
       const SizedBox(height:26),...Role.values.map((r)=>Padding(padding:const EdgeInsets.only(bottom:10),child:RoleButton(r,()=>c.login(r)))),
     ]))))),
   ]));
@@ -192,9 +192,28 @@ class Analytics extends StatelessWidget{
 class History extends StatelessWidget{const History({super.key,required this.c});final RescueController c;@override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(18),children:[const TitleBlock('AUDIT TRAIL','Incident timeline','Chronological record of reporting, scoring, assignment, acceptance, arrival and resolution.'),const SizedBox(height:16),...c.incidents.map((i)=>IncidentCard(i:i,expanded:true))]);}
 class MapView extends StatelessWidget{const MapView({super.key,required this.c});final RescueController c;@override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(18),children:[const TitleBlock('LIVE RESPONSE MAP','Campus tactical view','Incident locations and responder progress.'),const SizedBox(height:16),SizedBox(height:540,child:CampusMap(incidents:c.incidents.where((i)=>i.status!=Status.resolved).toList()))]);}
 
-class CampusMap extends StatelessWidget{
-  const CampusMap({super.key,required this.incidents});final List<Incident> incidents;
-  @override Widget build(BuildContext context)=>ClipRRect(borderRadius:BorderRadius.circular(20),child:Stack(children:[const Positioned.fill(child:CustomPaint(painter:CampusPainter())),const Positioned(top:16,left:16,child:MapTag()),...List.generate(math.min(incidents.length,5),(n)=>Positioned(left:60.0+(n*67)%230,top:100.0+(n*81)%260,child:Pulse(color:n==0?Colors.redAccent:Colors.cyanAccent)),),const Positioned(left:16,right:16,bottom:16,child:MapLegend())]));}
+class CampusMap extends StatefulWidget{
+  const CampusMap({super.key,required this.incidents}); final List<Incident> incidents;
+  @override State<CampusMap> createState()=>_CampusMapState();
+}
+class _CampusMapState extends State<CampusMap>{
+  double rx=-.035,ry=.025;
+  @override Widget build(BuildContext context)=>GestureDetector(
+    onPanUpdate:(d)=>setState((){ry+=(d.delta.dx/900);rx-=(d.delta.dy/900);}),
+    child:ClipRRect(borderRadius:BorderRadius.circular(22),child:Transform(
+      alignment:Alignment.center,
+      transform:Matrix4.identity()..setEntry(3,2,.0015)..rotateX(rx)..rotateY(ry),
+      child:Stack(children:[
+        const Positioned.fill(child:CustomPaint(painter:CampusPainter())),
+        const Positioned.fill(child:IgnorePointer(child:CustomPaint(painter:ScanlinePainter()))),
+        const Positioned(top:16,left:16,child:MapTag()),
+        ...List.generate(math.min(widget.incidents.length,5),(n)=>Positioned(left:60.0+(n*67)%230,top:100.0+(n*81)%260,child:Pulse(color:n==0?Colors.redAccent:Colors.cyanAccent))),
+        const Positioned(left:16,right:16,bottom:16,child:MapLegend()),
+      ]),
+    )),
+  );
+}
+
 class CampusPainter extends CustomPainter{
   const CampusPainter();
   @override void paint(Canvas canvas,Size s){canvas.drawRect(Offset.zero& s,Paint()..color=const Color(0xFF08141D));final grid=Paint()..color=const Color(0xFF15313A)..strokeWidth=1;for(double x=0;x<s.width;x+=32)canvas.drawLine(Offset(x,0),Offset(x,s.height),grid);for(double y=0;y<s.height;y+=32)canvas.drawLine(Offset(0,y),Offset(s.width,y),grid);final road=Paint()..color=const Color(0xFF1B3440)..strokeWidth=20..strokeCap=StrokeCap.round;canvas.drawLine(Offset(s.width*.04,s.height*.8),Offset(s.width*.45,s.height*.25),road);canvas.drawLine(Offset(s.width*.45,s.height*.25),Offset(s.width*.94,s.height*.72),road);canvas.drawLine(Offset(s.width*.1,s.height*.2),Offset(s.width*.84,s.height*.35),road);final b=Paint()..color=const Color(0xFF10232D);for(final r in [Rect.fromLTWH(s.width*.1,s.height*.48,100,65),Rect.fromLTWH(s.width*.57,s.height*.15,110,72),Rect.fromLTWH(s.width*.68,s.height*.5,130,80)])canvas.drawRRect(RRect.fromRectAndRadius(r,const Radius.circular(8)),b);}
@@ -217,9 +236,60 @@ class StatusBar extends StatelessWidget{const StatusBar({super.key,required this
 class Priority extends StatelessWidget{const Priority(this.text,{super.key});final String text;@override Widget build(BuildContext c)=>Container(padding:const EdgeInsets.symmetric(horizontal:8,vertical:5),decoration:BoxDecoration(color:(text=='CRITICAL'?Colors.redAccent:Colors.amber).withOpacity(.12),borderRadius:BorderRadius.circular(20)),child:Text(text,style:TextStyle(fontSize:9,fontWeight:FontWeight.w900,color:text=='CRITICAL'?Colors.redAccent:Colors.amber)));}
 class Metrics extends StatelessWidget{const Metrics({super.key,required this.items});final List<(String,String,Color)> items;@override Widget build(BuildContext c)=>Row(children:items.map((x)=>Expanded(child:Padding(padding:const EdgeInsets.only(right:8),child:Glass(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(x.$1,style:const TextStyle(fontSize:9,color:Colors.white45,letterSpacing:1)),const SizedBox(height:6),Text(x.$2,style:TextStyle(fontSize:23,fontWeight:FontWeight.w900,color:x.$3))])))).toList());}}
 class TitleBlock extends StatelessWidget{const TitleBlock(this.eyebrow,this.title,this.subtitle,{super.key});final String eyebrow,title,subtitle;@override Widget build(BuildContext c)=>Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(eyebrow,style:const TextStyle(fontSize:9,letterSpacing:2,color:Colors.cyanAccent)),const SizedBox(height:6),Text(title,style:const TextStyle(fontSize:28,fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(subtitle,style:const TextStyle(fontSize:12,color:Colors.white45,height:1.45))]);}
-class Glass extends StatelessWidget{const Glass({super.key,required this.child});final Widget child;@override Widget build(BuildContext c)=>Container(padding:const EdgeInsets.all(16),decoration:BoxDecoration(color:Colors.white.withOpacity(.045),borderRadius:BorderRadius.circular(18),border:Border.all(color:Colors.white.withOpacity(.08)),boxShadow:[BoxShadow(color:Colors.black.withOpacity(.28),blurRadius:24,offset:const Offset(0,12))]),child:child);}
+class Glass extends StatefulWidget{
+  const Glass({super.key,required this.child,this.glow=false});
+  final Widget child; final bool glow;
+  @override State<Glass> createState()=>_GlassState();
+}
+class _GlassState extends State<Glass> with SingleTickerProviderStateMixin{
+  late final AnimationController a;
+  @override void initState(){super.initState();a=AnimationController(vsync:this,duration:const Duration(seconds:4))..repeat(reverse:true);}
+  @override void dispose(){a.dispose();super.dispose();}
+  @override Widget build(BuildContext context)=>AnimatedBuilder(animation:a,builder:(_,__) {
+    final lift=math.sin(a.value*math.pi)*3;
+    final glow=(widget.glow?.20:.06)+(math.sin(a.value*math.pi)*.04);
+    return Transform.translate(offset:Offset(0,-lift),child:Container(
+      padding:const EdgeInsets.all(16),
+      decoration:BoxDecoration(color:Colors.white.withOpacity(.045),borderRadius:BorderRadius.circular(20),
+        border:Border.all(color:Colors.white.withOpacity(.10)),
+        boxShadow:[BoxShadow(color:const Color(0xFF18D7C2).withOpacity(glow),blurRadius:28,spreadRadius:1),BoxShadow(color:Colors.black.withOpacity(.30),blurRadius:28,offset:const Offset(0,14))]),
+      child:widget.child));
+  });
+}
+
 class Empty extends StatelessWidget{const Empty(this.text,{super.key});final String text;@override Widget build(BuildContext c)=>Glass(child:SizedBox(width:double.infinity,child:Column(children:[const Icon(Icons.check_circle_outline,color:Colors.greenAccent,size:46),const SizedBox(height:10),Text(text,style:const TextStyle(color:Colors.white54))])));}
 class Success extends StatelessWidget{const Success({super.key,required this.onAgain});final VoidCallback onAgain;@override Widget build(BuildContext c)=>Center(child:Padding(padding:const EdgeInsets.all(22),child:Glass(child:Column(mainAxisSize:MainAxisSize.min,children:[const Icon(Icons.verified,color:Colors.greenAccent,size:70),const SizedBox(height:16),const Text('HELP IS BEING DISPATCHED',style:TextStyle(fontSize:19,fontWeight:FontWeight.w900,letterSpacing:1)),const SizedBox(height:8),const Text('Your emergency report and location are now in the response network.',textAlign:TextAlign.center,style:TextStyle(color:Colors.white54)),const SizedBox(height:20),FilledButton(onPressed:onAgain,child:const Text('Create another report'))])));}
-class GridPainter extends CustomPainter{const GridPainter();@override void paint(Canvas c,Size s){c.drawRect(Offset.zero&s,Paint()..color=const Color(0xFF071019));final p=Paint()..color=const Color(0xFF102831)..strokeWidth=1;for(double x=0;x<s.width;x+=34)c.drawLine(Offset(x,0),Offset(x,s.height),p);for(double y=0;y<s.height;y+=34)c.drawLine(Offset(0,y),Offset(s.width,y),p);}@override bool shouldRepaint(covariant CustomPainter oldDelegate)=>false;}
+class GridPainter extends CustomPainter{
+  const GridPainter();
+  @override void paint(Canvas c,Size s){
+    c.drawRect(Offset.zero&s,Paint()..color=const Color(0xFF050C13));
+    final p=Paint()..color=const Color(0xFF102831)..strokeWidth=1;
+    for(double x=0;x<s.width;x+=34)c.drawLine(Offset(x,0),Offset(x,s.height),p);
+    for(double y=0;y<s.height;y+=34)c.drawLine(Offset(0,y),Offset(s.width,y),p);
+    final glow=Paint()..shader=RadialGradient(colors:[const Color(0xFF18D7C2).withOpacity(.13),Colors.transparent]).createShader(Rect.fromCircle(center:Offset(s.width*.72,s.height*.18),radius:s.width*.55));
+    c.drawCircle(Offset(s.width*.72,s.height*.18),s.width*.55,glow);
+  }
+  @override bool shouldRepaint(covariant CustomPainter oldDelegate)=>false;
+}
+class ScanlinePainter extends CustomPainter{
+  const ScanlinePainter();
+  @override void paint(Canvas c,Size s){final p=Paint()..color=const Color(0xFF18D7C2).withOpacity(.035)..strokeWidth=1;for(double y=0;y<s.height;y+=6)c.drawLine(Offset(0,y),Offset(s.width,y),p);}
+  @override bool shouldRepaint(covariant CustomPainter oldDelegate)=>false;
+}
+class OrbitalCore extends StatefulWidget{
+  const OrbitalCore({super.key});
+  @override State<OrbitalCore> createState()=>_OrbitalCoreState();
+}
+class _OrbitalCoreState extends State<OrbitalCore> with SingleTickerProviderStateMixin{
+  late final AnimationController a;
+  @override void initState(){super.initState();a=AnimationController(vsync:this,duration:const Duration(seconds:8))..repeat();}
+  @override void dispose(){a.dispose();super.dispose();}
+  @override Widget build(BuildContext context)=>AnimatedBuilder(animation:a,builder:(_,__)=>SizedBox(width:150,height:150,child:Stack(alignment:Alignment.center,children:[
+    Transform.rotate(angle:a.value*math.pi*2,child:Container(width:142,height:142,decoration:BoxDecoration(shape:BoxShape.circle,border:Border.all(color:Colors.cyanAccent.withOpacity(.12))))),
+    Transform.rotate(angle:-a.value*math.pi*2,child:Container(width:108,height:108,decoration:BoxDecoration(shape:BoxShape.circle,border:Border.all(color:Colors.redAccent.withOpacity(.22),width:2)))),
+    Container(width:72,height:72,decoration:BoxDecoration(shape:BoxShape.circle,gradient:const RadialGradient(colors:[Color(0xFF39F4D8),Color(0xFF0A6B68),Color(0xFF071019)]),boxShadow:[BoxShadow(color:Colors.cyanAccent.withOpacity(.35),blurRadius:28)]),child:const Icon(Icons.radar,color:Colors.white,size:34)),
+  ])));
+}
+
 String timeText(DateTime t)=>'\${t.hour.toString().padLeft(2,'0')}:\${t.minute.toString().padLeft(2,'0')}';
 Future<void> openMap(Incident i)async{if(i.lat==null||i.lng==null)return;final u=Uri.parse('https://www.google.com/maps/dir/?api=1&destination=\${i.lat},\${i.lng}');if(await canLaunchUrl(u))await launchUrl(u,mode:LaunchMode.externalApplication);}
